@@ -628,7 +628,7 @@ MonoBehaviour:
   jumpRate: 2.5
   maxYVel: 13.5
   jumpGrav: 2
-  fallGrav: 5.5
+  fallGrav: 5
   headCheckPoint: {fileID: 729586671307648875}
   groundedCheckPoint: {fileID: 729586671733554591}
   groundedCheckRadius: 0.1

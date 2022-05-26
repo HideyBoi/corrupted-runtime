@@ -25,7 +25,6 @@ public class Player : MonoBehaviour
     public LayerMask wallCheckLayerMask;
 
     public bool isJumping = false;
-    public bool isFalling = false;
     public bool isGrounded = false;
     public float jumpRate;
     public float maxYVel;
@@ -39,7 +38,8 @@ public class Player : MonoBehaviour
 
     public AudioSource jump;
 
-    private void Awake() {
+    private void Awake()
+    {
         controls = new Controls();
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
@@ -53,33 +53,40 @@ public class Player : MonoBehaviour
         Cursor.visible = false;
     }
 
-    void Move(Vector2 dir) {
+    void Move(Vector2 dir)
+    {
         isMoving = true;
         rawMoveDir = dir;
     }
 
-    void StopMove() {
+    void StopMove()
+    {
         isMoving = false;
         rawMoveDir = Vector2.zero;
     }
 
-    void Jump(bool pressed) {
-        if (pressed && isGrounded) {
+    void Jump(bool pressed)
+    {
+        if (pressed && isGrounded)
+        {
             isJumping = true;
             jump.Play();
-        } else {
+        }
+        else
+        {
             isJumping = false;
-            isFalling = true;
         }
     }
 
-    void Pause() {
+    void Pause()
+    {
         pause.SetActive(true);
         Time.timeScale = 0f;
         Cursor.visible = true;
     }
 
-    private void FixedUpdate() {
+    private void FixedUpdate()
+    {
         CalcMovement();
         CalcJump();
 
@@ -87,75 +94,88 @@ public class Player : MonoBehaviour
         anim.SetBool("isgrounded", isGrounded);
     }
 
-    void CalcJump() {
+    void CalcJump()
+    {
         Collider2D coll = Physics2D.OverlapCircle(groundedCheckPoint.position, groundedCheckRadius, groundedCheckLayerMask);
-        if (coll != null) {
+        if (coll != null)
+        {
             isGrounded = true;
-            isFalling = false;
-        } else {
+        }
+        else
+        {
             isGrounded = false;
         }
 
         Collider2D coll2 = Physics2D.OverlapCircle(headCheckPoint.position, groundedCheckRadius, headCheckLayerMask);
-        if (coll2 != null) {
+        if (coll2 != null)
+        {
             isJumping = false;
         }
 
-        if (isJumping) {
-            if (rb.velocity.y < maxYVel) {
+        if (isJumping)
+        {
+            if (rb.velocity.y < maxYVel)
+            {
                 rb.AddForce(new Vector2(0, jumpRate), ForceMode2D.Impulse);
-            } else {
+            }
+            else
+            {
                 isJumping = false;
             }
         }
 
-        if (isFalling)
+        if (rb.velocity.y > 0)
         {
-            rb.gravityScale = fallGrav;
+            rb.gravityScale = jumpGrav;
         }
         else
         {
-            if (rb.velocity.y > 0)
-            {
-                rb.gravityScale = jumpGrav;
-            }
-            else
-            {
-                rb.gravityScale = fallGrav;
-            }
+            rb.gravityScale = fallGrav;
         }
     }
 
-    void CalcMovement() {
+    void CalcMovement()
+    {
         moveDir = Vector2.Lerp(moveDir, rawMoveDir, Time.deltaTime * 4f);
 
         velocity.y = rb.velocity.y;
 
-        if (isMoving) {
-            if (currentSpeed > maxSpeed) {
+        if (isMoving)
+        {
+            if (currentSpeed > maxSpeed)
+            {
                 currentSpeed = maxSpeed;
             }
-            else {
+            else
+            {
                 currentSpeed += accel * Time.fixedDeltaTime;
             }
         }
-        else {
-            if (currentSpeed > 0) {
+        else
+        {
+            if (currentSpeed > 0)
+            {
                 currentSpeed -= deaccel * Time.fixedDeltaTime;
             }
-            else {
+            else
+            {
                 currentSpeed = 0;
             }
         }
 
-        if (moveDir.x > 0) {
+        if (moveDir.x > 0)
+        {
             Collider2D coll = Physics2D.OverlapBox(wallCheckPoint.position, wallCheckSize, 0f, wallCheckLayerMask);
-            if (coll != null) {
+            if (coll != null)
+            {
                 moveDir.x = 0;
             }
-        } else if (moveDir.x < 0) {
+        }
+        else if (moveDir.x < 0)
+        {
             Collider2D coll = Physics2D.OverlapBox(wallCheckPointLeft.position, wallCheckSize, 0f, wallCheckLayerMask);
-            if (coll != null) {
+            if (coll != null)
+            {
                 moveDir.x = 0;
             }
         }
@@ -165,11 +185,13 @@ public class Player : MonoBehaviour
         rb.velocity = velocity;
     }
 
-    private void OnEnable() {
+    private void OnEnable()
+    {
         controls.Enable();
     }
 
-    private void OnDisable() {
+    private void OnDisable()
+    {
         controls.Disable();
     }
 }
